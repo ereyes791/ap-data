@@ -1,5 +1,5 @@
 <template>
-    <prism-editor class="my-editor" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
+  <prism-editor class="my-editor" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
 </template>
 
 <script>
@@ -17,7 +17,17 @@ export default {
   components: {
     PrismEditor
   },
-  data: () => ({ code: 'import json' }),
+  data() {
+    return{
+      code:'',
+    };
+  },
+  watch:{
+    code(newCode){
+      this.$store.commit('codeBuilderService/codeUpdate',newCode);
+      console.log(newCode);
+    }
+  },
   methods: {
     highlighter(code) {
       return highlight(code, languages.py); //returns html
@@ -25,6 +35,7 @@ export default {
   },
   mounted()
   {
+    this.code = this.$store.state.codeBuilderService.code
     console.log(languages);
   }
 };

@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const local = {
   getTopicInfoWrapper(topics) {
     let topicsArray = [];
@@ -37,16 +38,18 @@ const local = {
     if (!content[0]) return;
     const resultArray = [];
     console.log(content);
-    content.forEach(element =>{
+    content.forEach(element => {
       const contentMapped = {};
       contentMapped["title"] = element.name;
       contentMapped["description"] = element.description;
       contentMapped["linkText"] = element.link_text;
       let idX = "";
-      if(nameContent === "video"){
-        idX= element.YT_video_url;
-        contentMapped["keyTerms"] = element.key_terns
-      }else{ idX = element.id}
+      if (nameContent === "video") {
+        idX = element.YT_video_url;
+        contentMapped["keyTerms"] = element.key_terns;
+      } else {
+        idX = element.id;
+      }
       contentMapped["id"] = idX;
       contentMapped["link"] = `/content/${tag}/${nameContent}/${idX}`;
       contentMapped["data"] = element;
@@ -61,17 +64,17 @@ const local = {
         value.videos,
         value.tag,
         "video"
-      ); 
+      );
       value.algorithms = this.getReadableContentForTopic(
         value.algorithms,
         value.tag,
         "code-builder"
-      ); 
+      );
       value.papers = this.getReadableContentForTopic(
         value.papers,
         value.tag,
         "paper"
-      ); 
+      );
       map[value.tag] = value;
       return map;
     }, {});

@@ -4,15 +4,15 @@
     <section class="code-builder__main">
       <v-row>
         <v-col cols="6">
-          <problem-assets/>
+          <problem-assets :problem="algorithmData"/>
         </v-col>
         <v-col cols="6">
-          <code-box/>
+          <code-box />
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
-          <code-result-widget/>
+          <code-result-widget :info="algorithmData"/>
         </v-col>
       </v-row>
     </section>
@@ -23,8 +23,6 @@
 import ProblemAssets from '~/components/widgets/problem-assets.vue';
 import CodeBox from '~/components/widgets/code-box.vue';
 import CodeResultWidget from '~/components/widgets/code-result-widget.vue';
-import axios from 'axios';
-import qs from 'qs';
 
 export default {
   components:{
@@ -32,35 +30,25 @@ export default {
     CodeBox,
     CodeResultWidget
   },
+  computed:{
+    algorithmData(){
+      let data = null;
+      this.$store.state.content.topics[this.$route.params.id].algorithms
+        .forEach(algo=>{
+            if(algo.id === this.$route.params.uuid){
+              console.log(algo);
+              data = algo.data;
+            }
+        });
+      return data;
+    },
+  },
   mounted(){
+    this.$store.commit('codeBuilderService/codeUpdate',this.algorithmData.initial_code);
     console.log(this.$store.state.codeBuilderService.env);
   },
   methods:{
     runCode(){
-      let data = qs.stringify({
-        'client_secret': '79dabab812bee8d13da1718b7b9b7993503fd7ea',
-        'source': 'def cero():\n  return 0\nprint(cero())',
-        'lang': 'PYTHON'
-        });
-      const config = {
-        method: 'post',
-        url: 'https://api.hackerearth.com:443/code/run',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Origin': 'http://localhost:3000',
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type, Authorization'
-        },
-        data : data
-      };
-
-      axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
     }
   }
 }

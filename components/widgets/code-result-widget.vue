@@ -18,11 +18,11 @@
       </v-tab>
           <v-tab-item>
             <v-card flat>
-              <v-card-text>
+              <v-card-text
+                v-for="(raw,index) in rawOutput"
+                :key="index">
                 <p>
-                  ---------- Test Case 1 ----------
-                  <br/>
-                  ---------- Test Case 2 ----------
+                {{ raw }}
                 </p>
               </v-card-text>
             </v-card>
@@ -30,16 +30,18 @@
           <v-tab-item>
             <v-card flat>
               <v-card>
-                <v-card-text>
+                <v-card-text
+                  v-for="(test,index) in testResults" 
+                  :key="index">
                   <p>
-                    Params = [2,3,4]
+                    Params = {{ params[index] }}
                      <br/>
-                    our Code: 4
+                    our Code: {{ test }}
                   </p>
                   <p>
-                    Params = [2,3,4]
+                    Params = {{ params[index] }}
                      <br/>
-                    your Code: 4
+                    your Code: {{ customOutput[index] }}
                   </p>
                 </v-card-text>
               </v-card>
@@ -58,6 +60,7 @@
         <v-btn
           tile
           class="btn-runcode"
+          v-on:click="click"
         >
           <v-icon left>
             mdi-play
@@ -65,7 +68,8 @@
           Run code
         </v-btn>
         <v-btn
-          class="btn-submit">
+          class="btn-submit"
+          v-on:click="submitCode">
           Submit
         </v-btn>
     </v-row>
@@ -77,7 +81,59 @@
 
 <script>
 export default {
-
+  props:['info'],
+  data(){
+    return{
+    }
+  },
+  computed: {
+    rawOutput(){
+      return this.$store.state.codeBuilderService.rawOutput
+    },
+    customOutput(){
+      return this.$store.state.codeBuilderService.customOutput; 
+    },
+    testResults(){
+      const results = this.info.tests_results_output;
+      return JSON.parse(results);
+    },
+    params(){
+      const params = this.info.tests_input; 
+      return JSON.parse(params); 
+    }
+  },
+  methods:{
+    click(){
+      this.$store.dispatch('codeBuilderService/requestRunCode',this.info);
+    },
+    submitCode(){
+      // playing with the data.
+      const response = this.$store.state.codeBuilderService.response;
+      const output = response.data.run_status.output;
+      const arrayOutput = output.split('\n');
+      let customOutput = [];
+      let rawOutput = ['----------Test 1-----------'];
+      let switchBoolean = false;
+      let testCounter = 2;
+      arrayOutput.forEach((output,index)=>{
+        console.log(index,arrayOutput.length);
+        if(index + 1 >= arrayOutput.length) return;
+        if(switchBoolean){
+          customOutput.push(output)
+          switchBoolean = false; 
+        }else if(output === '---------------------'){
+          switchBoolean = true;
+          rawOutput.push(`----------Test ${testCounter}-----------`);
+          testCounter++;
+        }else{
+          rawOutput.push(output);
+          switchBoolean = false; 
+        }
+      });
+      console.log(rawOutput);
+      console.log(customOutput);
+    }
+  },
 }
 </script>
 

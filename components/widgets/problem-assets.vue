@@ -19,7 +19,7 @@
             <v-card-text
               v-if="problem">
               <p>
-              {{ problem.problem_aproach +' \n'+ problem.problem_example }}
+              {{ problem.problem +' \n'+ problem.problem_examples }}
               </p>
             </v-card-text>
           </v-card>
@@ -28,7 +28,7 @@
           <v-card flat>
             <v-card-text>
               <p>
-              {{ problem.problem_solved_explained}}
+              {{ problem.problem_solved}}
               </p>
             </v-card-text>
           </v-card>
@@ -42,24 +42,17 @@
 import tabsCodeProblems from '../tools/tabs-code-problems.vue'
 
 export default {
+  props:['problem'],
   components: { tabsCodeProblems },
   data(){
     return{
       text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
     }
   },
-  computed:{
-    problem(){
-      let data = null;
-      this.$store.state.content.topics[this.$route.params.id].algorithms
-        .forEach(algo=>{
-            if(algo.id === this.$route.params.uuid){
-              console.log(algo);
-              data = algo.data;
-            }
-        });
-      return data;
-    },
+  mounted(){
+    let testsInputs = this.problem.tests_input;
+    console.log(JSON.parse(testsInputs)); 
+    console.log(this.problem.initial_code.split(' ')); 
   }
 }
 </script>
